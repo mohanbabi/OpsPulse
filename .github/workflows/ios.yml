@@ -38,10 +38,32 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
+      - name: Patch React Native boost podspec
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("node_modules/react-native/third-party-podspecs/boost.podspec")
+          text = p.read_text()
+
+          old = "https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2"
+          new = "https://archives.boost.io/release/1.76.0/source/boost_1_76_0.tar.bz2"
+
+          if old in text:
+              text = text.replace(old, new)
+              p.write_text(text)
+              print("Patched boost.podspec successfully.")
+          else:
+              print("boost.podspec already patched or URL not found.")
+          PY
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios
-          pod install
+          pod deintegrate || true
+          rm -rf Pods Podfile.lock
+          pod cache clean --all || true
+          pod install --repo-update
 
       - name: Build iOS app for simulator on branch/PR/manual runs
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/')
