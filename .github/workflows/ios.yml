@@ -67,7 +67,7 @@ jobs:
             -scheme rnBridging \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=18.5' \
+            -destination 'generic/platform=iOS Simulator' \
             build
 
       - name: Archive iOS app for version tags
