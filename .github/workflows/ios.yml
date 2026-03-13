@@ -12,7 +12,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   ios-build:
@@ -33,37 +33,31 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
 
       - name: Install npm dependencies
         run: npm install
 
       - name: Patch React Native boost podspec
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
+          echo "Before patch:"
+          grep -n "boost_1_76_0.tar.bz2" node_modules/react-native/third-party-podspecs/boost.podspec || true
 
-          p = Path("node_modules/react-native/third-party-podspecs/boost.podspec")
-          text = p.read_text()
+          perl -0pi -e 's#https://boostorg\.jfrog\.io/artifactory/main/release/1\.76\.0/source/boost_1_76_0\.tar\.bz2#https://archives.boost.io/release/1.76.0/source/boost_1_76_0.tar.bz2#g' node_modules/react-native/third-party-podspecs/boost.podspec
 
-          old = "https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2"
-          new = "https://archives.boost.io/release/1.76.0/source/boost_1_76_0.tar.bz2"
+          echo "After patch:"
+          grep -n "boost_1_76_0.tar.bz2" node_modules/react-native/third-party-podspecs/boost.podspec || true
 
-          if old in text:
-              text = text.replace(old, new)
-              p.write_text(text)
-              print("Patched boost.podspec successfully.")
-          else:
-              print("boost.podspec already patched or URL not found.")
-          PY
-
-      - name: Install CocoaPods dependencies
+      - name: Clean CocoaPods state
         run: |
           cd ios
           pod deintegrate || true
           rm -rf Pods Podfile.lock
           pod cache clean --all || true
-          pod install --repo-update
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install --repo-update --verbose
 
       - name: Build iOS app for simulator on branch/PR/manual runs
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/')
