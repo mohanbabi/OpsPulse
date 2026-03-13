@@ -1,9 +1,13 @@
 name: Build & Release Android APK
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
