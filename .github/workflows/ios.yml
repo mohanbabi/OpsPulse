@@ -62,12 +62,35 @@ jobs:
       - name: Build iOS app for simulator on branch/PR/manual runs
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/')
         run: |
+          echo "Available destinations:"
+          xcodebuild \
+            -workspace ios/rnBridging.xcworkspace \
+            -scheme rnBridging \
+            -showdestinations
+
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 17 Pro Max" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone Air" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+          fi
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone SE (3rd generation)" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+          fi
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            echo "No suitable iOS simulator found."
+            exit 1
+          fi
+
+          echo "Using simulator ID: $SIMULATOR_ID"
+
           xcodebuild \
             -workspace ios/rnBridging.xcworkspace \
             -scheme rnBridging \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination "id=$SIMULATOR_ID" \
             build
 
       - name: Archive iOS app for version tags
