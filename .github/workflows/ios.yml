@@ -63,8 +63,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/')
         run: |
           xcodebuild \
-            -workspace ios/OpsPulse.xcworkspace \
-            -scheme OpsPulse \
+            -workspace ios/rnBridging.xcworkspace \
+            -scheme rnBridging \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 15' \
@@ -74,12 +74,12 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           xcodebuild \
-            -workspace ios/OpsPulse.xcworkspace \
-            -scheme OpsPulse \
+            -workspace ios/rnBridging.xcworkspace \
+            -scheme rnBridging \
             -configuration Release \
             -sdk iphoneos \
             -destination generic/platform=iOS \
-            -archivePath ios/build/OpsPulse.xcarchive \
+            -archivePath ios/build/rnBridging.xcarchive \
             archive
 
       - name: Upload iOS archive artifact
@@ -87,5 +87,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-xcarchive
-          path: ios/build/OpsPulse.xcarchive
+          path: ios/build/rnBridging.xcarchive
           if-no-files-found: error
