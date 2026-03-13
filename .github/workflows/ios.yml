@@ -68,14 +68,14 @@ jobs:
             -scheme rnBridging \
             -showdestinations
 
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 17 Pro Max" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 17 Pro Max" | head -n 1 | sed -E 's/.*\[([0-9A-F-]+)\].*/\1/')
 
           if [ -z "$SIMULATOR_ID" ]; then
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone Air" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone Air" | head -n 1 | sed -E 's/.*\[([0-9A-F-]+)\].*/\1/')
           fi
 
           if [ -z "$SIMULATOR_ID" ]; then
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone SE (3rd generation)" | head -n 1 | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone SE (3rd generation)" | head -n 1 | sed -E 's/.*\[([0-9A-F-]+)\].*/\1/')
           fi
 
           if [ -z "$SIMULATOR_ID" ]; then
