@@ -15,7 +15,6 @@
     "react": "18.2.0",
     "react-native": "0.72.3",
     "react-native-haptic-feedback": "^2.3.4",
-    "react-native-sound": "^0.13.0",
     "react-native-vector-icons": "^10.3.0"
   },
   "devDependencies": {

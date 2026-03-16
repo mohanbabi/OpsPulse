@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { NativeModules } from 'react-native';
-import Sound from 'react-native-sound';
+// import Sound from 'react-native-sound';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
